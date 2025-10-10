@@ -1,34 +1,25 @@
-import { useState, useEffect, FormEvent } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { auth } from '@/lib/auth';
-import { AlertCircle, LogIn } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Mail } from 'lucide-react';
 
-const Login = () => {
-  const navigate = useNavigate();
+const ForgotPassword = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const checkSession = async () => {
-      const session = await auth.getSession();
-      if (session) navigate('/');
-    };
-    checkSession();
-  }, [navigate]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    const { session, error: authError } = await auth.signIn(email, password);
+    const { error: authError } = await auth.sendPasswordResetEmail(email);
 
     if (authError) {
       setError(authError);
@@ -36,21 +27,50 @@ const Login = () => {
       return;
     }
 
-    if (session) {
-      window.location.href = '/';
-    }
+    setSuccess(true);
+    setLoading(false);
   };
+
+  if (success) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center mb-4">
+              <CheckCircle2 className="h-6 w-6 text-accent" />
+            </div>
+            <CardTitle>Email Enviado!</CardTitle>
+            <CardDescription>
+              Se existe uma conta com o email {email}, você receberá as instruções para redefinir sua senha.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Alert>
+              <AlertDescription>
+                Verifique sua caixa de entrada e spam.
+              </AlertDescription>
+            </Alert>
+          </CardContent>
+          <CardFooter>
+            <Button asChild className="w-full" variant="outline">
+              <Link to="/login">Voltar para o login</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-            <LogIn className="h-6 w-6 text-primary" />
+            <Mail className="h-6 w-6 text-primary" />
           </div>
-          <CardTitle>Entrar no VIGIA</CardTitle>
+          <CardTitle>Esqueceu a Senha?</CardTitle>
           <CardDescription>
-            Faça login para reportar e acompanhar problemas urbanos
+            Digite seu email para receber instruções de recuperação
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -73,36 +93,16 @@ const Login = () => {
                 required
               />
             </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Senha</Label>
-                <Link to="/forgot-password" className="text-sm text-primary hover:underline">
-                  Esqueceu?
-                </Link>
-              </div>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Sua senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
           </CardContent>
 
           <CardFooter className="flex flex-col gap-4">
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Entrando...' : 'Entrar'}
+              {loading ? 'Enviando...' : 'Enviar Email de Recuperação'}
             </Button>
             
-            <p className="text-sm text-muted-foreground text-center">
-              Não tem uma conta?{' '}
-              <Link to="/signup" className="text-primary hover:underline">
-                Criar conta
-              </Link>
-            </p>
+            <Button asChild variant="ghost" className="w-full">
+              <Link to="/login">Voltar para o login</Link>
+            </Button>
           </CardFooter>
         </form>
       </Card>
@@ -110,4 +110,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ForgotPassword;

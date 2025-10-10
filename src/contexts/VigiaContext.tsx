@@ -17,7 +17,9 @@ export interface Case {
     address?: string;
   };
   image?: string;
-  iir: number;
+  iir: number | null;
+  affectedPeople?: number;
+  affectedPeopleUnknown?: boolean;
   supports: number;
   createdAt: string;
   updatedAt: string;
@@ -83,6 +85,7 @@ export const VigiaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       supports: 0,
       userId: currentUser.id,
       userName: currentUser.name,
+      iir: null, // IIR will be calculated by AI in future versions
     };
     
     setCases(prev => [newCase, ...prev]);

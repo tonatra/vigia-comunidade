@@ -23,6 +23,8 @@ const NewCase = () => {
   const [priority, setPriority] = useState<CasePriority>('medium');
   const [location, setLocation] = useState<{ lat: number; lng: number; address?: string } | null>(null);
   const [image, setImage] = useState<string | null>(null);
+  const [affectedPeople, setAffectedPeople] = useState('');
+  const [affectedPeopleUnknown, setAffectedPeopleUnknown] = useState(false);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -56,8 +58,6 @@ const NewCase = () => {
       return;
     }
 
-    const iir = Math.floor(Math.random() * 100);
-
     addCase({
       title,
       description,
@@ -66,7 +66,9 @@ const NewCase = () => {
       status: 'pending',
       location,
       image: image || undefined,
-      iir,
+      iir: null,
+      affectedPeople: affectedPeopleUnknown ? undefined : parseInt(affectedPeople) || undefined,
+      affectedPeopleUnknown,
     });
 
     toast({
@@ -82,11 +84,7 @@ const NewCase = () => {
       <Header />
       
       <main className="container mx-auto px-4 py-6 max-w-4xl">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/')}
-          className="mb-4"
-        >
+        <Button variant="ghost" onClick={() => navigate('/')} className="mb-4">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Voltar
         </Button>
@@ -148,6 +146,36 @@ const NewCase = () => {
                     <SelectItem value="critical">Crítica</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <Label>Pessoas Afetadas</Label>
+              <Input
+                type="number"
+                placeholder="Quantas pessoas são afetadas?"
+                value={affectedPeople}
+                onChange={(e) => {
+                  setAffectedPeople(e.target.value);
+                  if (e.target.value) setAffectedPeopleUnknown(false);
+                }}
+                disabled={affectedPeopleUnknown}
+                min="0"
+              />
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="unknown"
+                  checked={affectedPeopleUnknown}
+                  onChange={(e) => {
+                    setAffectedPeopleUnknown(e.target.checked);
+                    if (e.target.checked) setAffectedPeople('');
+                  }}
+                  className="h-4 w-4 rounded border-input"
+                />
+                <label htmlFor="unknown" className="text-sm text-muted-foreground cursor-pointer">
+                  Não sei informar (a IA estimará futuramente)
+                </label>
               </div>
             </div>
 
