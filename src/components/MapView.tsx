@@ -30,28 +30,30 @@ const MapView = ({ cases, height = '500px' }: MapViewProps) => {
         scrollWheelZoom={false}
         style={{ height: '100%', width: '100%' }}
       >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        {cases.map(caso => (
-          <Marker
-            key={caso.id}
-            position={[caso.location.lat, caso.location.lng]}
-          >
-            <Popup>
-              <div className="p-2">
-                <h3 className="font-semibold mb-1">{caso.title}</h3>
-                <p className="text-sm text-gray-600 mb-2">{caso.description.substring(0, 100)}...</p>
-                <Link
-                  to={`/caso/${caso.id}`}
-                  className="text-sm text-blue-600 hover:underline"
-                >
-                  Ver detalhes
-                </Link>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+        <>
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          {cases.map(caso => (
+            <Marker
+              key={caso.id}
+              position={[caso.location.lat, caso.location.lng]}
+            >
+              <Popup>
+                <div className="p-2">
+                  <h3 className="font-semibold mb-1">{caso.title}</h3>
+                  <p className="text-sm text-gray-600 mb-2">{caso.description.substring(0, 100)}...</p>
+                  <Link
+                    to={`/caso/${caso.id}`}
+                    className="text-sm text-blue-600 hover:underline"
+                  >
+                    Ver detalhes
+                  </Link>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+        </>
       </MapContainer>
     </div>
   );
