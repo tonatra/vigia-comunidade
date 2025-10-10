@@ -119,7 +119,7 @@ const Home = () => {
             </div>
           ) : (
             filteredCases.map(caso => (
-              <Link key={caso.id} to={`/caso/${caso.id}`}>
+              <Link key={caso.id} to={`/caso/${caso.id}`} className="block">
                 <Card className="p-4 hover:shadow-lg transition-shadow cursor-pointer">
                   {caso.image && (
                     <img
